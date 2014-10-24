@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>reveal.js - The HTML Presentation Framework</title>
+
+		<meta name="description" content="A framework for easily creating beautiful presentations using HTML">
+		<meta name="author" content="Hakim El Hattab">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<link rel="stylesheet" href="css/reveal.min.css">
+		<link rel="stylesheet" href="css/theme/beige.css" id="theme">
+
+		<!-- For syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- If the query includes 'print-pdf', include the PDF print sheet -->
+		<script>
+			if( window.location.search.match( /print-pdf/gi ) ) {
+				var link = document.createElement( 'link' );
+				link.rel = 'stylesheet';
+				link.type = 'text/css';
+				link.href = 'css/print/pdf.css';
+				document.getElementsByTagName( 'head' )[0].appendChild( link );
+			}
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				<section>
+					<h1>WebComponents Hoy</h1>
+					<h3>Introducción y alternativas para implementar WebComponents hoy</h3>
+					<p>
+						<small><a href="http://gorzas.es">José David Cano</a> / <a href="http://twitter.com/gorzas">@gorzas</a></small>
+					</p>
+				</section>
+
+				<section>
+					<h2>¿De qué alternativas vamos a hablar?</h2>
+					<ul>
+						<li class="fragment">Javascript "básico"</li>
+						<li class="fragment">Polymer (WebComponents polyfill)</li>
+						<li class="fragment">EmberJS</li>
+					</ul>
+				</section>
+
+				<!-- Example of nested vertical slides -->
+				<section>
+					<h2>Javascript "básico" (VanillaJS)</h2>
+				</section>
+
+				<section>
+					<h2>Características</h2>
+					<ul>
+						<li class="fragment highlight-current-green">Production-ready</li>
+						<li class="fragment highlight-current-green">Fácil y rápido de desarrollar</li>
+						<li class="fragment highlight-current-green">Gran flexibilidad</li>
+						<li class="fragment highlight-current-red">No son Webcomponents</li>
+						<li class="fragment highlight-current-red">No hay data-binding</li>
+						<li class="fragment highlight-current-red">Do It Yourself</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Ejemplo código - Instanciación de un Webcomponent</h2>
+
+
+					<pre>
+						<code data-trim style="font-size:16px;">
+&lt;section&gt;
+  &lt;div class="example col-md-6" data-template="components/example" data-min="0.0" data-max="100.0"&gt;&lt;/div&gt;
+&lt;/section&gt;
+						</code>
+					</pre>
+					<p>
+						Ejemplo: <a href="http://gorzas.es/webcomponents/vanillajs/">VanillaJS</a>
+					</p>
+					<p>
+						Fuente: <a href="https://github.com/Gorzas/webcomponents-vanillajs-example">https://github.com/Gorzas/webcomponents-vanillajs-example</a>
+					</p>
+				</section>
+
+				<section>
+					<h2>Ejemplo código - Plantilla Componente</h2>
+					<pre>
+						<code data-trim style="font-size:16px;">
+&lt;h2&gt;Component Scope&lt;/h2&gt;
+&lt;div class="col-md-6"&gt;
+  &lt;h3&gt;Value&lt;/h3&gt;
+  &lt;input type="text" id="text" value="&lt;%- value %&gt;"&gt;
+&lt;/div&gt;
+&lt;div class="col-md-6"&gt;
+  &lt;h3&gt;Range bar&lt;/h3&gt;
+  &lt;input type="range" id="range" min="&lt;%- min %&gt;" max="&lt;%- max %&gt;" value="&lt;%- value %&gt;"&gt;
+&lt;/div&gt;
+						</code>
+					</pre>
+					<p>
+						Fuente: <a href="https://github.com/Gorzas/webcomponents-vanillajs-example">https://github.com/Gorzas/webcomponents-vanillajs-example</a>
+					</p>
+				</section>
+
+				<section>
+					<h2>Ejemplo código - Component.js</h2>
+					<pre>
+						<code data-trim style="font-size:16px;">
+var Component = {
+  template: window.JST.example,
+
+  init: function (root) {
+    this.$root = $(root);
+    this.min = root.getAttribute('data-min') || 0.0;
+    this.max = root.getAttribute('data-max') || 100.0;
+    this.value = Math.floor((this.max - this.min) / 2);
+
+    this.render();
+
+    this.addListeners();
+  },
+
+  addListeners: function () {
+    var that = this;
+
+    this.$root.on('change', '#text', function() {
+      that.value = this.value;
+
+      that.render();
+    });
+
+    this.$root.on('change', '#range', function() {
+      that.value = this.value;
+
+      that.render();
+    });
+  },
+
+  render: function () {
+    var temp = this.template;
+
+    this.$root.html(temp({
+      min: this.min,
+      max: this.max,
+      value: this.value
+    }));
+  }
+};
+						</code>
+					</pre>
+					<p>
+						Fuente: <a href="https://github.com/Gorzas/webcomponents-vanillajs-example">https://github.com/Gorzas/webcomponents-vanillajs-example</a>
+					</p>
+				</section>
+
+				<section>
+					<h2>Polymer</h2>
+				</section>
+
+				<section>
+					<h2>Características WebComponents</h2>
+					<ul>
+						<li class="fragment">Custom Elements</li>
+						<li class="fragment">HTML Imports</li>
+						<li class="fragment">Templates</li>
+						<li class="fragment">Shadow DOM</li>
+					</ul>
+				</section>
+
+				<section id="transitions">
+					<h2>Características Polymer</h2>
+					<ul>
+						<li class="fragment highlight-current-green">Propuesto para estándar por el W3C</li>
+						<li class="fragment highlight-current-green">Data-binding</li>
+						<li class="fragment highlight-current-green">No requiere librerías extra</li>
+						<li class="fragment highlight-current-red">No es production-ready</li>
+						<li class="fragment highlight-current-red">Depuración de errores compleja</li>
+					</ul>
+				</section>
+
+				<section id="themes">
+					<h2>Ejemplo Código - Instancia</h2>
+					<pre>
+						<code data-trim style="font-size:16px;">
+&lt;range-example class="example col-md-6" min="10" max="90"&gt;&lt;/range-example&gt;
+&lt;div class="example col-md-6"&gt;
+  &lt;h2&gt;Another header&lt;/h2&gt;
+&lt;/div&gt;
+						</code>
+					</pre>
+					<p>
+						Ejemplo: <a href="http://gorzas.es/webcomponents/polymer/">Polymer</a>
+					</p>
+					<p>
+						Fuente: <a href="https://github.com/Gorzas/webcomponents-polymer-example">https://github.com/Gorzas/webcomponents-polymer-example</a>
+					</p>
+				</section>
+
+				<section>
+					<h2>Ejemplo Código - Componente</h2>
+					<pre>
+						<code data-trim style="font-size:16px;">
+&lt;link rel="import" href="../bower_components/polymer/polymer.html"&gt;
+
+&lt;polymer-element name="range-example" attributes="min max value"&gt;
+  &lt;template&gt;
+    &lt;link rel="stylesheet" type="text/css" href="range-example.css"&gt;
+    &lt;h2&gt;Component Scope&lt;/h2&gt;
+    &lt;div class="col-md-6"&gt;
+      &lt;h3&gt;Value&lt;/h3&gt;
+      &lt;input type="text" value="{{value}}"&gt;
+    &lt;/div&gt;
+    &lt;div class="col-md-6"&gt;
+      &lt;h3&gt;Range bar&lt;/h3&gt;
+      &lt;input type="range" min="{{min}}" max="{{max}}" value="{{value}}"&gt;
+    &lt;/div&gt;
+  &lt;/template&gt;
+  &lt;script&gt;
+    Polymer('range-example', {
+      ready: function () {
+        this.value = Math.floor((this.max - this.min) / 2);
+      }
+    });
+  &lt;/script&gt;
+&lt;/polymer-element&gt;
+						</code>
+					</pre>
+					<p>
+						Fuente: <a href="https://github.com/Gorzas/webcomponents-polymer-example">https://github.com/Gorzas/webcomponents-polymer-example</a>
+					</p>
+				</section>
+
+				<section data-state="customevent">
+					<h2>EmberJS</h2>
+					<p>
+						<img src="assets/imgs/emberjs.png" style="border:none;">
+					</p>
+				</section>
+
+				<section>
+					<h2>Características EmberJS</h2>
+					<ul>
+						<li class="fragment highlight-current-green">Data-binding</li>
+						<li class="fragment highlight-current-green">Framework de verdad</li>
+						<li class="fragment highlight-current-green">Adapta funcionalidades ECMAScript6</li>
+						<li class="fragment highlight-current-green">Compatibilidad con navegadores</li>
+						<li class="fragment highlight-current-red">Escasa flexibilidad</li>
+						<li class="fragment highlight-current-red">Curva de aprendizaje pronunciada</li>
+						<li class="fragment highlight-current-red">Ember-cli y Ember Data en fase beta</li>
+					</ul>
+				</section>
+
+				<section>
+					<h3>Código Ejemplo - Plantilla</h3>
+					<strong>app.hbs</strong>
+ 					<pre>
+						<code data-trim style="font-size:16px;">
+&lt;div class="index"&gt;
+  {{range-example min="10" max="90" value=value}}
+  &lt;div class="example controller col-md-6"&gt;
+    &lt;h2&gt;Controller scope&lt;/h2&gt;
+    {{value}}
+  &lt;/div&gt;
+&lt;/div&gt;
+						</code>
+					</pre>
+					<strong>range-example.hbs</strong>
+ 					<pre>
+						<code data-trim style="font-size:16px;">
+&lt;h2&gt;Component Scope&lt;/h2&gt;
+&lt;div class="col-md-6"&gt;
+  &lt;h3&gt;Value&lt;/h3&gt;
+  {{input type="text" id="text" value=value}}
+&lt;/div&gt;
+&lt;div class="col-md-6"&gt;
+  &lt;h3&gt;Range bar&lt;/h3&gt;
+  {{input type="range" id="range" in=min max=max value=value}}
+&lt;/div&gt;
+						</code>
+					</pre>
+					<p>
+						Fuente: <a href="https://github.com/Gorzas/webcomponents-emberjs-example">https://github.com/Gorzas/webcomponents-emberjs-example</a>
+					</p>
+				</section>
+
+				<section>
+					<h2>Código Ejemplo - Componente</h2>
+					<strong>range-example.js</strong>
+ 					<pre>
+						<code data-trim style="font-size:16px;">
+import Ember from 'ember';
+
+export default Ember.Component.extend({
+  classNames : ['example col-md-6'],
+
+  init: function () {
+    this._super();
+
+    if (!this.get('value')) {
+      this.set('value', Math.floor((this.get('max') - this.get('min')) / 2));
+    }
+  }
+});
+
+						</code>
+					</pre>
+					<p>
+						Fuente: <a href="https://github.com/Gorzas/webcomponents-emberjs-example">https://github.com/Gorzas/webcomponents-emberjs-example</a>
+					</p>
+				</section>
+
+				<section>
+					<h2>Referencias</h2>
+					<ul>
+						<li>Underscore - <a href="http://underscorejs.org/">http://underscorejs.org</a></li>
+						<li>EmberJS - <a href="http://emberjs.com/">http://emberjs.com</a></li>
+						<li>Polymer Project - <a href="https://www.polymer-project.org">https://www.polymer-project.org</a></li>
+						<li>Webcomponents - <a href="http://webcomponents.org/">http://webcomponents.org</a></li>
+						<li>Shadow DOM 101 - <a href="http://www.html5rocks.com/en/tutorials/webcomponents/shadowdom/">http://www.html5rocks.com/en/tutorials/webcomponents/shadowdom/</a> </li>
+					</ul>
+				</section>
+
+				<section>
+					<h1>FIN</h1>
+				</section>
+
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.min.js"></script>
+
+		<script>
+
+			// Full list of configuration options available here:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: false,
+				slideNumber: true,
+
+				theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+				transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+
+				// Parallax scrolling
+				// parallaxBackgroundImage: 'https://s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg',
+				// parallaxBackgroundSize: '2100px 900px',
+
+				// Optional libraries used to extend on reveal.js
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+					{ src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
